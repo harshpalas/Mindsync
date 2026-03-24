@@ -1,16 +1,17 @@
 import { MongoClient } from "mongodb"
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
-}
+export const MONGODB_URI_MISSING_ERROR =
+  'Invalid/Missing environment variable: "MONGODB_URI". Add it in .env.local (see .env.example).'
 
 const uri = process.env.MONGODB_URI
 const options = {}
 
-let client
+let client: MongoClient | undefined
 let clientPromise: Promise<MongoClient>
 
-if (process.env.NODE_ENV === "development") {
+if (!uri) {
+  clientPromise = Promise.reject(new Error(MONGODB_URI_MISSING_ERROR))
+} else if (process.env.NODE_ENV === "development") {
   const globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>
   }
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV === "development") {
     client = new MongoClient(uri, options)
     globalWithMongo._mongoClientPromise = client.connect()
   }
+
   clientPromise = globalWithMongo._mongoClientPromise
 } else {
   client = new MongoClient(uri, options)

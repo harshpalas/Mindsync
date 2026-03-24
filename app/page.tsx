@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, BookOpen, CheckSquare, PenTool, TrendingUp, Search } from "lucide-react"
+import { Calendar, BookOpen, CheckSquare, PenTool, TrendingUp, Search, CheckCircle2 } from "lucide-react"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Input } from "@/components/ui/input"
 import Navigation from "@/components/navigation"
@@ -112,18 +112,84 @@ function MindSyncApp() {
       case "tasks":
         return <TasksView onDataChanged={fetchDashboardData} />
       case "study":
-        return <StudyView onDataChanged={fetchDashboardData}/>
+        return <StudyView onDataChanged={fetchDashboardData} />
       case "settings":
         return <SettingsView />
-      default:
+      default: {
+        const onboardingSteps = [
+          {
+            label: "Create your first note",
+            done: dashboardData.totalNotes > 0,
+            action: () => setActiveView("notes"),
+            cta: "Open Notes",
+          },
+          {
+            label: "Write your first journal entry",
+            done: dashboardData.journalStreak > 0,
+            action: () => setActiveView("journal"),
+            cta: "Open Journal",
+          },
+          {
+            label: "Add a task",
+            done: dashboardData.upcomingTasks.length > 0 || dashboardData.pendingTasks > 0,
+            action: () => setActiveView("tasks"),
+            cta: "Open Tasks",
+          },
+          {
+            label: "Add a study subject",
+            done: dashboardData.studySubjects.length > 0,
+            action: () => setActiveView("study"),
+            cta: "Open Study Tracker",
+          },
+        ]
+
+        const completedSteps = onboardingSteps.filter((step) => step.done).length
+        const onboardingPercent = Math.round((completedSteps / onboardingSteps.length) * 100)
+
         return (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold">Welcome back, {session?.user?.name}! 👋</h1>
+                <h1 className="text-3xl font-bold">Welcome back, {session?.user?.name}!</h1>
                 <p className="text-muted-foreground mt-1">Here's your productivity overview for today</p>
               </div>
             </div>
+
+            {onboardingPercent < 100 && (
+              <Card className="border-blue-200 bg-blue-50/60 dark:border-blue-900 dark:bg-blue-950/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5" />
+                    Quick Onboarding
+                  </CardTitle>
+                  <CardDescription>Complete these steps to set up your workflow</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Progress</span>
+                      <span>{onboardingPercent}%</span>
+                    </div>
+                    <Progress value={onboardingPercent} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    {onboardingSteps.map((step) => (
+                      <div key={step.label} className="flex items-center justify-between rounded-md border p-3">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className={`h-4 w-4 ${step.done ? "text-green-500" : "text-muted-foreground"}`} />
+                          <span className={step.done ? "line-through text-muted-foreground" : ""}>{step.label}</span>
+                        </div>
+                        {!step.done && (
+                          <Button size="sm" variant="outline" onClick={step.action}>
+                            {step.cta}
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
@@ -137,7 +203,7 @@ function MindSyncApp() {
                   title: "Journal Streak",
                   value: `${dashboardData.journalStreak} days`,
                   icon: <Calendar className="h-4 w-4 text-muted-foreground" />,
-                  message: dashboardData.journalStreak === 0 ? "Start journaling today!" : "Keep it up! 🔥",
+                  message: dashboardData.journalStreak === 0 ? "Start journaling today!" : "Keep it up!",
                 },
                 {
                   title: "Pending Tasks",
@@ -171,7 +237,6 @@ function MindSyncApp() {
               ))}
             </div>
 
-            {/* THIS DIV STACKS THE CARDS VERTICALLY WITH FULL WIDTH */}
             <div className="flex flex-col gap-6 w-full">
               <Card className="w-full transition-colors duration-300 bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-gray-900 dark:text-white shadow-md rounded-2xl">
                 <CardHeader>
@@ -249,6 +314,7 @@ function MindSyncApp() {
             </div>
           </div>
         )
+      }
     }
   }
 
@@ -289,3 +355,4 @@ export default function App() {
     </ThemeProvider>
   )
 }
+

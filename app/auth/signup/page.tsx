@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
+import { useEffect, useState } from "react"
+import { getProviders, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,7 +21,17 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [googleEnabled, setGoogleEnabled] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    const loadProviders = async () => {
+      const providers = await getProviders()
+      setGoogleEnabled(Boolean(providers?.google))
+    }
+
+    loadProviders()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,12 +40,6 @@ export default function SignUp() {
 
     if (password !== confirmPassword) {
       setError("Passwords don't match")
-      setIsLoading(false)
-      return
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters")
       setIsLoading(false)
       return
     }
@@ -50,7 +54,6 @@ export default function SignUp() {
       })
 
       if (response.ok) {
-        // Auto sign in after successful registration
         const result = await signIn("credentials", {
           email,
           password,
@@ -67,7 +70,7 @@ export default function SignUp() {
         const data = await response.json()
         setError(data.error || "Registration failed")
       }
-    } catch (error) {
+    } catch {
       setError("Something went wrong")
     } finally {
       setIsLoading(false)
@@ -75,10 +78,15 @@ export default function SignUp() {
   }
 
   const handleGoogleSignIn = async () => {
+    if (!googleEnabled) {
+      setError("Google OAuth is not configured yet")
+      return
+    }
+
     setIsLoading(true)
     try {
       await signIn("google", { callbackUrl: "/" })
-    } catch (error) {
+    } catch {
       setError("Google sign in failed")
       setIsLoading(false)
     }
@@ -103,19 +111,21 @@ export default function SignUp() {
             </Alert>
           )}
 
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
-            <Chrome className="w-4 h-4 mr-2" />
-            Continue with Google
-          </Button>
+          <>
+            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={!googleEnabled || isLoading}>
+              <Chrome className="w-4 h-4 mr-2" />
+              {googleEnabled ? "Continue with Google" : "Google OAuth (configure in .env.local)"}
+            </Button>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-            </div>
-          </div>
+          </>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -195,3 +205,4 @@ export default function SignUp() {
     </div>
   )
 }
+
