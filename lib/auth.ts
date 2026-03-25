@@ -1,19 +1,15 @@
-import type { NextAuthOptions } from "next-auth"
+﻿import { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { MongoDBAdapter } from "@auth/mongodb-adapter"
 import bcrypt from "bcryptjs"
-
-import {
-  clearCredentialFailures,
-  isCredentialsTemporarilyLocked,
-  recordCredentialFailure,
-} from "@/lib/auth-security"
 import clientPromise from "@/lib/mongodb"
+import { clearCredentialFailures, isCredentialsTemporarilyLocked, recordCredentialFailure } from "@/lib/auth-security"
 import { emailLookupQuery, normalizeEmail } from "@/lib/validation"
 
 const isConfiguredValue = (value?: string) => Boolean(value && !value.startsWith("your-"))
 
+// Basic checks
 const hasMongo = Boolean(process.env.MONGODB_URI)
 const hasGoogle = isConfiguredValue(process.env.GOOGLE_CLIENT_ID) && isConfiguredValue(process.env.GOOGLE_CLIENT_SECRET)
 const hasAuthSecret = Boolean(process.env.NEXTAUTH_SECRET)
@@ -92,7 +88,6 @@ export const authOptions: NextAuthOptions = {
   ...(hasAuthSecret ? { secret: process.env.NEXTAUTH_SECRET } : {}),
   pages: {
     signIn: "/auth/signin",
-    signUp: "/auth/signup",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -109,4 +104,3 @@ export const authOptions: NextAuthOptions = {
     },
   },
 }
-

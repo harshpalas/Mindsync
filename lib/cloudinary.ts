@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary"
+﻿import { v2 as cloudinary } from "cloudinary"
 
 // Configure Cloudinary
 cloudinary.config({
@@ -58,7 +58,8 @@ export const uploadToCloudinary = async (file: File): Promise<{ url: string; pub
     })
   } catch (error) {
     console.error("💥 Upload preparation error:", error)
-    throw new Error(`Upload preparation failed: ${error.message}`)
+    // Fix: cast error to any or Error to access message
+    throw new Error(`Upload preparation failed: ${(error as any).message}`)
   }
 }
 
@@ -69,7 +70,7 @@ export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
     console.log("✅ Cloudinary delete result:", result)
   } catch (error) {
     console.error("❌ Cloudinary delete error:", error)
-    throw new Error(`Failed to delete from Cloudinary: ${error.message}`)
+    throw new Error(`Failed to delete from Cloudinary: ${(error as any).message}`)
   }
 }
 
