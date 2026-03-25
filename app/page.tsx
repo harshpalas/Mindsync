@@ -19,6 +19,14 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { ProtectedRoute } from "@/components/protected-route"
 
+// Helper to format Date to "YYYY-MM-DD" using local time
+const formatLocalDate = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
 function MindSyncApp() {
   const { data: session } = useSession()
   const [activeView, setActiveView] = useState("dashboard")
@@ -26,6 +34,7 @@ function MindSyncApp() {
   const [dashboardData, setDashboardData] = useState({
     totalNotes: 0,
     journalStreak: 0,
+    journalCount: 0,
     pendingTasks: 0,
     studyProgress: 0,
     recentNotes: [],
@@ -52,11 +61,13 @@ function MindSyncApp() {
 
       const pendingTasks = tasks.filter((task: any) => task.status !== "Done").length
       const journalStreak = calculateJournalStreak(journal)
+      const journalCount = journal.length
       const studyProgress = calculateOverallStudyProgress(subjects)
 
       setDashboardData({
         totalNotes: notes.length,
         journalStreak,
+        journalCount,
         pendingTasks,
         studyProgress,
         recentNotes: notes.slice(0, 3),
@@ -75,7 +86,8 @@ function MindSyncApp() {
     for (let i = 0; i < 30; i++) {
       const checkDate = new Date(today)
       checkDate.setDate(today.getDate() - i)
-      const hasEntry = entries.some((entry) => new Date(entry.date).toDateString() === checkDate.toDateString())
+      const checkDateStr = formatLocalDate(checkDate)
+      const hasEntry = entries.some((entry) => entry.date === checkDateStr)
       if (hasEntry) streak++
       else if (i === 0) continue
       else break
@@ -125,7 +137,7 @@ function MindSyncApp() {
           },
           {
             label: "Write your first journal entry",
-            done: dashboardData.journalStreak > 0,
+            done: dashboardData.journalCount > 0,
             action: () => setActiveView("journal"),
             cta: "Open Journal",
           },
