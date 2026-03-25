@@ -83,6 +83,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 ## 📂 Project Structure
 
+```bash
 Mindsync/
 │
 ├── app/                         # Next.js App Router (pages + APIs)
@@ -104,6 +105,7 @@ Mindsync/
 ├── public/                      # Static assets (images, icons, etc.)
 │
 └── README.md                    # Project documentation
+```
 
 ## 🤝 Contributing
 
