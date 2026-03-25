@@ -85,19 +85,26 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 \\\
 Mindsync/
-├── app/                  # Next.js App Router pages and API routes
-│   ├── api/             # Backend API endpoints
-│   ├── auth/            # Authentication pages (signin, signup)
-│   ├── layout.tsx       # Root layout
-│   └── page.tsx         # Main dashboard
-├── components/           # Reusable UI components
-│   ├── ui/              # Shadcn UI primitive components
-│   └── ...              # Feature-specific components (JournalView, etc.)
-├── lib/                  # Utility functions and configurations
-│   ├── mongodb.ts       # Database connection
-│   └── auth.ts          # Authentication logic
-├── types/                # TypeScript type definitions
-└── public/               # Static assets
+│
+├── app/                         # Next.js App Router (pages + APIs)
+│   ├── api/                     # Backend API endpoints
+│   ├── auth/                    # Authentication pages (signin, signup)
+│   ├── layout.tsx               # Root layout
+│   └── page.tsx                 # Main dashboard page
+│
+├── components/                  # Reusable UI components
+│   ├── ui/                      # Shadcn UI primitive components
+│   └── ...                      # Feature-specific components (JournalView, etc.)
+│
+├── lib/                         # Utilities & configurations
+│   ├── mongodb.ts               # MongoDB connection setup
+│   └── auth.ts                  # Authentication logic (NextAuth config)
+│
+├── types/                       # TypeScript type definitions
+│
+├── public/                      # Static assets (images, icons, etc.)
+│
+└── README.md                    # Project documentation
 \\\
 
 ## 🤝 Contributing
