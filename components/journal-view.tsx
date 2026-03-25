@@ -40,6 +40,21 @@ import {
   TrendingUp,
   Trash2,
 } from "lucide-react"
+
+// Helper to format Date to "YYYY-MM-DD" using local time
+const formatLocalDate = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+// Helper to parse "YYYY-MM-DD" to Date using local time (midnight)
+const parseLocalDate = (dateString: string) => {
+  if (!dateString) return new Date()
+  const [year, month, day] = dateString.split("-").map(Number)
+  return new Date(year, month - 1, day)
+}
 interface JournalEntry {
   _id: string
   date: string
@@ -134,7 +149,7 @@ export default function JournalView({ onDataChanged }: JournalViewProps) {
   const handleCreateEntry = async () => {
   if (newEntry.content.trim()) {
     const entry = {
-      date: selectedDate?.toISOString().split("T")[0] || new Date().toISOString().split("T")[0],
+      date: selectedDate ? formatLocalDate(selectedDate) : formatLocalDate(new Date()),
       title: newEntry.title || `Entry for ${selectedDate?.toDateString()}`,
       content: newEntry.content,
       mood: newEntry.mood,
@@ -180,7 +195,7 @@ const deleteEntry = async (entryId: string) => {
 
   const getStreakDays = () => {
     const today = new Date()
-    const entryDates = journalEntries.map((entry) => new Date(entry.date))
+    const entryDates = journalEntries.map((entry) => parseLocalDate(entry.date))
     let streak = 0
 
     for (let i = 0; i < 30; i++) {
@@ -201,12 +216,12 @@ const deleteEntry = async (entryId: string) => {
   }
 
   const hasEntryOnDate = (date: Date) => {
-    return journalEntries.some((entry) => new Date(entry.date).toDateString() === date.toDateString())
+    { const checkDateStr = formatLocalDate(date); return journalEntries.some((entry) => entry.date === checkDateStr); }
   }
 
   const getEntriesForSelectedDate = () => {
     if (!selectedDate) return []
-    const selectedDateString = selectedDate.toISOString().split("T")[0]
+    const selectedDateString = formatLocalDate(selectedDate)
     return journalEntries.filter((entry) => entry.date === selectedDateString)
   }
 
@@ -336,7 +351,7 @@ const deleteEntry = async (entryId: string) => {
             <div className="text-2xl font-bold">
               {
                 journalEntries.filter((entry) => {
-                  const entryDate = new Date(entry.date)
+                  const entryDate = parseLocalDate(entry.date)
                   const now = new Date()
                   return entryDate.getMonth() === now.getMonth() && entryDate.getFullYear() === now.getFullYear()
                 }).length
