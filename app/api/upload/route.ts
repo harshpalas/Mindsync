@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import clientPromise from "@/lib/mongodb"
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       console.error("❌ Cloudinary upload failed:", uploadError)
       return NextResponse.json(
         {
-          error: `Upload failed: ${uploadError.message}`,
+          error: `Upload failed: ${uploadError instanceof Error ? uploadError.message : "Unknown upload error"}`,
           details: "Please check your Cloudinary configuration",
         },
         { status: 500 },
@@ -149,8 +149,8 @@ export async function POST(request: NextRequest) {
     console.error("💥 Upload API error:", error)
     return NextResponse.json(
       {
-        error: `Upload failed: ${error.message}`,
-        details: error.stack,
+        error: `Upload failed: ${error instanceof Error ? error.message : "Unknown upload error"}`,
+        details: error instanceof Error ? error.stack : undefined,
       },
       { status: 500 },
     )

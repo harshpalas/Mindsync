@@ -33,7 +33,7 @@ interface StudyViewProps {
 }
 
 export default function StudyView({ onDataChanged }: StudyViewProps) {
-  const [subjects, setSubjects] = useState([])
+  const [subjects, setSubjects] = useState<any[]>([])
   const [isCreateSubjectOpen, setIsCreateSubjectOpen] = useState(false)
   const [isCreateChapterOpen, setIsCreateChapterOpen] = useState(false)
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false)
@@ -560,7 +560,7 @@ export default function StudyView({ onDataChanged }: StudyViewProps) {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete Subject</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete "{subject.name}"? This will also delete all chapters and
+                          Are you sure you want to delete &quot;{subject.name}&quot;? This will also delete all chapters and
                           topics.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
@@ -627,7 +627,7 @@ export default function StudyView({ onDataChanged }: StudyViewProps) {
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>Delete Chapter</AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to delete "{chapter.title}"? This will also delete all topics
+                                    Are you sure you want to delete &quot;{chapter.title}&quot;? This will also delete all topics
                                     in this chapter.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
@@ -685,7 +685,7 @@ export default function StudyView({ onDataChanged }: StudyViewProps) {
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>Delete Topic</AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        Are you sure you want to delete "{topic.name}"?
+                                        Are you sure you want to delete &quot;{topic.name}&quot;?
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

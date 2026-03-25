@@ -151,7 +151,7 @@ function MindSyncApp() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold">Welcome back, {session?.user?.name}!</h1>
-                <p className="text-muted-foreground mt-1">Here's your productivity overview for today</p>
+                <p className="text-muted-foreground mt-1">Here&apos;s your productivity overview for today</p>
               </div>
             </div>
 

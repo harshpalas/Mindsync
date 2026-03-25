@@ -77,10 +77,10 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
     recurring: {
       enabled: false,
       type: "daily",
-      days: [],
+      days: [] as string[],
       interval: 1,
     },
-    dependencies: [],
+    dependencies: [] as string[],
     subtasks: "",
   })
 
@@ -321,7 +321,7 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
 
   const getSubtaskProgress = (subtasks: any[]) => {
     if (!subtasks || subtasks.length === 0) return 0
-    const completed = subtasks.filter((st) => st.completed).length
+    const completed = subtasks.filter((st: any) => st.completed).length
     return Math.round((completed / subtasks.length) * 100)
   }
 
@@ -356,8 +356,8 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
         dueDate: newTask.dueDate,
         tags: newTask.tags
           .split(",")
-          .map((tag) => tag.trim())
-          .filter((tag) => tag),
+          .map((tag: string) => tag.trim())
+          .filter((tag: string) => tag),
         category: newTask.category,
         estimatedTime: newTask.estimatedTime,
         timeSpent: 0,
@@ -399,10 +399,10 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
             recurring: {
               enabled: false,
               type: "daily",
-              days: [],
+              days: [] as string[],
               interval: 1,
             },
-            dependencies: [],
+            dependencies: [] as string[],
             subtasks: "",
           })
           setIsCreateDialogOpen(false)
@@ -459,7 +459,7 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
     return display
   }
 
-  const TaskCard = ({ task, isPastTask = false }) => {
+  const TaskCard = ({ task, isPastTask = false }: { task: any; isPastTask?: boolean }) => {
     const isExpanded = expandedTasks.has(task._id)
     const subtaskProgress = getSubtaskProgress(task.subtasks)
 
@@ -545,7 +545,7 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtasks Progress</span>
                 <span className="font-medium">
-                  {task.subtasks.filter((st) => st.completed).length}/{task.subtasks.length} ({subtaskProgress}%)
+                  {task.subtasks.filter((st: any) => st.completed).length}/{task.subtasks.length} ({subtaskProgress}%)
                 </span>
               </div>
               <Progress value={subtaskProgress} className="h-2" />
@@ -556,7 +556,7 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
           {isExpanded && task.subtasks && task.subtasks.length > 0 && (
             <div className="space-y-2 pl-4 border-l-2 border-muted">
               <h4 className="font-medium text-sm text-muted-foreground">Subtasks:</h4>
-              {task.subtasks.map((subtask) => (
+              {task.subtasks.map((subtask: any) => (
                 <div key={subtask.id} className="flex items-center gap-2">
                   <Checkbox
                     checked={subtask.completed}
@@ -629,7 +629,7 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
                 {task.category}
               </Badge>
               {task.tags &&
-                task.tags.map((tag, index) => (
+                task.tags.map((tag: any, index: number) => (
                   <Badge key={index} variant="outline" className="text-xs">
                     #{tag}
                   </Badge>
@@ -799,7 +799,7 @@ export default function TasksView({ onDataChanged }: TasksViewProps) {
                         onCheckedChange={(checked) =>
                           setNewTask({
                             ...newTask,
-                            recurring: { ...newTask.recurring, enabled: checked },
+                            recurring: { ...newTask.recurring, enabled: checked === true },
                           })
                         }
                       />

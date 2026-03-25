@@ -40,6 +40,16 @@ import {
   TrendingUp,
   Trash2,
 } from "lucide-react"
+interface JournalEntry {
+  _id: string
+  date: string
+  title: string
+  content: string
+  mood: string
+  tags: string[]
+  createdAt?: string
+}
+
 interface JournalViewProps {
   onDataChanged?: () => void
 }
@@ -54,7 +64,7 @@ export default function JournalView({ onDataChanged }: JournalViewProps) {
     title: "",
   })
 
-  const [journalEntries, setJournalEntries] = useState([])
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([])
 
   useEffect(() => {
     fetchJournalEntries()
@@ -64,7 +74,7 @@ export default function JournalView({ onDataChanged }: JournalViewProps) {
     try {
       const response = await fetch("/api/journal")
       if (response.ok) {
-        const entries = await response.json()
+        const entries: JournalEntry[] = await response.json()
         setJournalEntries(entries)
       }
     } catch (error) {
@@ -128,7 +138,7 @@ export default function JournalView({ onDataChanged }: JournalViewProps) {
       title: newEntry.title || `Entry for ${selectedDate?.toDateString()}`,
       content: newEntry.content,
       mood: newEntry.mood,
-      tags: [],
+      tags: [] as string[],
     }
 
     try {
@@ -141,7 +151,7 @@ export default function JournalView({ onDataChanged }: JournalViewProps) {
       })
 
       if (response.ok) {
-        const savedEntry = await response.json()
+        const savedEntry: JournalEntry = await response.json()
         setJournalEntries([savedEntry, ...journalEntries])
         setNewEntry({ content: "", mood: "Neutral", title: "" })
         setIsCreateDialogOpen(false)
@@ -450,7 +460,7 @@ const deleteEntry = async (entryId: string) => {
                         {entry.mood}
                       </Badge>
                       <span className="text-sm text-muted-foreground">
-                        {new Date(entry.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(entry.createdAt ?? entry.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
